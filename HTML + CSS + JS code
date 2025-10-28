@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Speech to Text Converter — Pallab Nandy</title>
+  <style>
+    :root {
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    }
+    body {
+      max-width: 960px;
+      margin: 28px auto;
+      padding: 18px;
+      color: #111;
+      background: #f4f6f8;
+    }
+    header, footer {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #0f62fe;
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button.secondary {
+      background: #e0e7ff;
+      color: #1e3a8a;
+    }
+    button.danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    select, input[type=checkbox] {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+    }
+    #transcript {
+      min-height: 200px;
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px dashed #cbd5e1;
+      background: #ffffff;
+      white-space: pre-wrap;
+      overflow: auto;
+    }
+    .status {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      background: #e6f4ff;
+      color: #0353a4;
+    }
+    .meta, .small {
+      font-size: 13px;
+      color: #64748b;
+    }
+    .info-card {
+      background: #e0f2fe;
+      padding: 14px;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+    <section style="display:flex;align-items:center;justify-content:space-between;padding:40px;background:#fef6e4;">
+  <div style="max-width:50%;">
+    <h1 style="font-size:36px;font-weight:bold;color:#222;">Speech to Text Converter</h1>
+    <p style="font-size:18px;color:#555;margin-top:12px;">
+      Turn your voice into text instantly. Supports multiple languages and lets you download or listen to your transcript.
+    </p>
+    <button style="margin-top:20px;padding:14px 24px;background:#0f62fe;color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer;">
+      Get Started →
+    </button>
+  </div>
+  <div style="max-width:45%;text-align:center;">
+    <div style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 6px 18px rgba(0,0,0,0.1);">
+      <img src="speak.jpg" alt="Speech Illustration" style="width:100%;borderlay:flex;flex-direction:column;gap:10px;">
+          <div style="background:#e0f2fe;padding:10px;border-radius:8px;">🎤 Don</div>
+          <div style="background:#f3e8ff;padding:10px;border-radius:8px;">🎧 Carla</div>
+          <div style="background:#fee2e2;padding:10px;border-radius:8px;">🔊 Sam</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+  <header>
+    <h1>Speech to Text Converter</h1>
+    <div class="meta">Powered by Web Speech API — Real-time transcription</div>
+  </header>
+
+  <div class="info-card">
+    <strong>Developer:</strong> Pallab Nandy<br>
+    <strong>University:</strong> Port City International University, Ctg<br>
+    <strong>Department:</strong> Computer Science & Engineering<br>
+    <strong>Project:</strong> Speech to Text Converter using Web Speech API
+  </div>
+
+  <div class="card">
+    <div class="controls">
+      <select id="lang">
+        <option value="en-US">English (US)</option>
+        <option value="bn-BD">Bengali (Bangladesh)</option>
+        <option value="hi-IN">Hindi (India)</option>
+        <option value="fr-FR">French</option>
+        <option value="es-ES">Spanish</option>
+        <option value="ar-SA">Arabic</option>
+        <option value="zh-CN">Chinese</option>
+        <option value="ja-JP">Japanese</option>
+      </select>
+      <label><input type="checkbox" id="continuous" checked /> Continuous</label>
+      <label><input type="checkbox" id="interim" checked /> Show interim</label>
+      <button id="startBtn">Start</button>
+      <button id="stopBtn" class="secondary" disabled>Stop</button>
+      <button id="copyBtn" class="secondary">Copy</button>
+      <button id="downloadBtn" class="secondary">Download</button>
+      <button id="clearBtn" class="danger">Clear</button>
+      <button id="speakBtn" class="secondary">Speak Text</button>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div class="status" id="status">Idle</div>
+      <div class="small">Detected API: <span id="apiName">—</span></div>
+    </div>
+
+    <div style="margin-top:14px">
+      <div id="transcript" contenteditable="true">(Transcript will appear here)</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="small">Best viewed in Chrome, Edge, or Chromium-based browsers.</div>
+  </footer>
+
+  <script>
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+    const apiName = SpeechRecognition ? (window.webkitSpeechRecognition ? 'webkitSpeechRecognition' : 'SpeechRecognition') : 'Not supported';
+    document.getElementById('apiName').textContent = apiName;
+
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    const langSel = document.getElementById('lang');
+    const continuousCh = document.getElementById('continuous');
+    const interimCh = document.getElementById('interim');
+    const statusEl = document.getElementById('status');
+    const transcriptEl = document.getElementById('transcript');
+    
+const speakBtn = document.getElementById('speakBtn');
+
+speakBtn.onclick = () => {
+  const text = transcriptEl.textContent;
+  if (!text.trim()) {
+    alert("Transcript is empty!");
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = langSel.value; // Use selected language
+  speechSynthesis.speak(utterance);
+};
+
+
+    let recognition = null;
+    let finalTranscript = '';
+
+    function setStatus(text, busy = false) {
+      statusEl.textContent = text;
+      statusEl.style.background = busy ? '#fff4e6' : '#e6f4ff';
+      statusEl.style.color = busy ? '#6a4100' : '#0353a4';
+    }
+
+    if (!SpeechRecognition) {
+      setStatus('Web Speech API not available in this browser');
+      startBtn.disabled = true;
+      stopBtn.disabled = true;
+    }
+
+    function initRecognition() {
+      if (!SpeechRecognition) return;
+      recognition = new SpeechRecognition();
+      recognition.lang = langSel.value;
+      recognition.interimResults = interimCh.checked;
+      recognition.continuous = continuousCh.checked;
+
+      recognition.onstart = () => {
+        setStatus('Listening...', true);
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+      };
+
+      recognition.onerror = (e) => {
+        console.error('Recognition error', e);
+        setStatus('Error: ' + (e.error || 'unknown'));
+      };
+
+      recognition.onend = () => {
+        setStatus('Idle');
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+      };
+
+      recognition.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const res = event.results[i];
+          const text = res[0].transcript;
+          if (res.isFinal) {
+           finalTranscript += text.trim() + '\n';
+          } else {
+            interim += text;
+          }
+        }
+        transcriptEl.textContent = finalTranscript + (interimCh.checked ? '\n' + interim : '');
+        transcriptEl.scrollTop = transcriptEl.scrollHeight;
+      };
+    }
+
+    startBtn.onclick = () => {
+      initRecognition();
+      recognition.start();
+    };
+
+    stopBtn.onclick = () => {
+      if (recognition) recognition.stop();
+    };
+
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(transcriptEl.textContent);
+      alert('Transcript copied to clipboard!');
+    };
+
+    downloadBtn.onclick = () => {
+      const blob = new Blob([transcriptEl.textContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'transcript.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    clearBtn.onclick = () => {
+      finalTranscript = '';
+      transcriptEl.textContent = '';
+    };
+  </script>
+</body>
+</html>
