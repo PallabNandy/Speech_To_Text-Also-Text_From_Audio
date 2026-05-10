@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech-to-Text & Text-to-Speech Converter</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-microphone-alt"></i>
+                <span>SpeechText Converter</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#converter">Converter</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Speech-to-Text & Text-to-Speech Converter</h1>
+            <p>Convert your speech to text and text to speech with ease. Designed for accessibility and convenience.</p>
+            <button class="cta-button" onclick="document.getElementById('converter').scrollIntoView({ behavior: 'smooth' })">
+                Get Started
+            </button>
+        </div>
+        <div class="hero-image">
+            <i class="fas fa-microphone"></i>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Why Choose Us?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>AI-Powered</h3>
+                    <p>Advanced AI technology for accurate speech recognition and natural text-to-speech conversion</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-universal-access"></i>
+                    <h3>Accessibility First</h3>
+                    <p>Designed with blind and visually impaired users in mind for maximum accessibility</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-globe"></i>
+                    <h3>Multiple Languages</h3>
+                    <p>Support for various languages and accents for global communication</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Real-time Processing</h3>
+                    <p>Fast and efficient conversion with real-time feedback</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-lock"></i>
+                    <h3>Privacy Secure</h3>
+                    <p>Your data is processed securely with no storage of personal information</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Mobile Friendly</h3>
+                    <p>Works seamlessly on desktop, tablet, and mobile devices</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Converter Section -->
+    <section id="converter" class="converter">
+        <div class="container">
+            <h2>Converter Tools</h2>
+            <div class="converter-grid">
+                <!-- Speech to Text -->
+                <div class="converter-card">
+                    <div class="converter-header">
+                        <i class="fas fa-microphone"></i>
+                        <h3>Speech to Text</h3>
+                    </div>
+                    <div class="converter-body">
+                        <p>Convert your spoken words into written text</p>
+                        <div class="input-group">
+                            <button class="record-btn" id="recordBtn" onclick="startRecording()">
+                                <i class="fas fa-circle"></i> Start Recording
+                            </button>
+                            <button class="stop-btn" id="stopBtn" onclick="stopRecording()" style="display:none;">
+                                <i class="fas fa-stop-circle"></i> Stop Recording
+                            </button>
+                        </div>
+                        <textarea id="speechOutput" placeholder="Your transcribed text will appear here..." readonly></textarea>
+                        <button class="copy-btn" onclick="copyToClipboard('speechOutput')">
+                            <i class="fas fa-copy"></i> Copy Text
+                        </button>
+                        <button class="download-btn" onclick="downloadText('speechOutput', 'speech_to_text.txt')">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Text to Speech -->
+                <div class="converter-card">
+                    <div class="converter-header">
+                        <i class="fas fa-volume-up"></i>
+                        <h3>Text to Speech</h3>
+                    </div>
+                    <div class="converter-body">
+                        <p>Convert your written text into natural-sounding speech</p>
+                        <textarea id="textInput" placeholder="Enter or paste your text here..."></textarea>
+                        <div class="controls">
+                            <label for="voiceSelect">Voice:</label>
+                            <select id="voiceSelect"></select>
+                        </div>
+                        <div class="controls">
+                            <label for="rateSlider">Speed:</label>
+                            <input type="range" id="rateSlider" min="0.5" max="2" step="0.1" value="1">
+                            <span id="rateValue">1x</span>
+                        </div>
+                        <div class="button-group">
+                            <button class="play-btn" onclick="speakText()">
+                                <i class="fas fa-play"></i> Play
+                            </button>
+                            <button class="pause-btn" onclick="pauseSpeech()">
+                                <i class="fas fa-pause"></i> Pause
+                            </button>
+                            <button class="stop-btn" onclick="stopSpeech()">
+                                <i class="fas fa-stop"></i> Stop
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2>How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Speech to Text</h3>
+                    <p>Click the microphone button and start speaking. Our AI technology will transcribe your speech in real-time.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Edit & Refine</h3>
+                    <p>Review and edit the transcribed text as needed. Copy or download your text for later use.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Text to Speech</h3>
+                    <p>Paste your text and select your preferred voice. Listen to natural-sounding audio output.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Share & Use</h3>
+                    <p>Download the audio file or share your converted content easily across platforms.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>About This Project</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Accessibility Meets Technology</h3>
+                    <p>This project was created with a mission to bridge communication gaps and provide equal access to technology for everyone, especially those with visual impairments.</p>
+                    <ul class="about-list">
+                        <li><i class="fas fa-check-circle"></i> Designed for blind and visually impaired users</li>
+                        <li><i class="fas fa-check-circle"></i> Built with modern AI technology</li>
+                        <li><i class="fas fa-check-circle"></i> Open-source and continuously improving</li>
+                        <li><i class="fas fa-check-circle"></i> Free and accessible to everyone</li>
+                    </ul>
+                </div>
+                <div class="about-stats">
+                    <div class="stat">
+                        <h4>100%</h4>
+                        <p>Free Access</p>
+                    </div>
+                    <div class="stat">
+                        <h4>50+</h4>
+                        <p>Languages</p>
+                    </div>
+                    <div class="stat">
+                        <h4>24/7</h4>
+                        <p>Available</p>
+                    </div>
+                    <div class="stat">
+                        <h4>∞</h4>
+                        <p>Users</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p><a href="mailto:pallabnandy3@gmail.com">pallabnandy3@gmail.com</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-linkedin"></i>
+                        <div>
+                            <h4>LinkedIn</h4>
+                            <p><a href="https://www.linkedin.com/in/pallab-nandy-bb39b5227" target="_blank">Pallab Nandy</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-github"></i>
+                        <div>
+                            <h4>GitHub</h4>
+                            <p><a href="https://github.com/PallabNandy" target="_blank">PallabNandy</a></p>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm">
+                    <input type="text" placeholder="Your Name" required>
+                    <input type="email" placeholder="Your Email" required>
+                    <textarea placeholder="Your Message" rows="5" required></textarea>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Speech-to-Text & Text-to-Speech Converter. Made with <i class="fas fa-heart"></i> by Pallab Nandy</p>
+            <div class="social-links">
+                <a href="https://github.com/PallabNandy" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/pallab-nandy-bb39b5227" target="_blank"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:pallabnandy3@gmail.com"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
